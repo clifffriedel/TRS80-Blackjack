@@ -10,10 +10,10 @@ const char * const cards[52] = {
     "AC", "2C", "3C", "4C", "5C", "6C", "7C", "8C", "9C", "10C", "JC", "QC", "KC"
 };
 
-int handsize = 8;
+const int handsize = 8;
 char *deck[52];
-char *playercards[handsize];
-char *dealercards[handsize];
+char *playercards[8];
+char *dealercards[8];
 unsigned int bankroll = 10000;
 unsigned int bet = 0;
 unsigned int cardsdealt = 0;
