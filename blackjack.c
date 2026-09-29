@@ -10,9 +10,10 @@ const char * const cards[52] = {
     "AC", "2C", "3C", "4C", "5C", "6C", "7C", "8C", "9C", "10C", "JC", "QC", "KC"
 };
 
+int handsize = 8;
 char *deck[52];
-char *playercards[5];
-char *dealercards[5];
+char *playercards[handsize];
+char *dealercards[handsize];
 unsigned int bankroll = 10000;
 unsigned int bet = 0;
 unsigned int cardsdealt = 0;
@@ -58,7 +59,6 @@ void displaycards(int dud) { /*dud = Dealer second card up or down.  Down = 0, o
     int i = 0;
     int j = 0;
     int k = 0;
-    int size = 5; /* Size of player and dealer hand arrays - have to explicitly set this */
     
     for (i = 1; i < 10; i++) { /* Clears card area */
         gotoxy(i,1);
@@ -98,7 +98,7 @@ void displaycards(int dud) { /*dud = Dealer second card up or down.  Down = 0, o
     } else {
         gotoxy(1,1);
         cprintf("Dealer: %d",dv);
-        for (i = 0; i < size; i++) {
+        for (i = 0; i < handsize; i++) {
             if (dealercards[i] != NULL) {
                 for (j = (i*5)+2; j < (i*5)+6; j++) {
                     for (k = 2; k < 6; k++) {
@@ -127,7 +127,7 @@ void displaycards(int dud) { /*dud = Dealer second card up or down.  Down = 0, o
     }
     gotoxy(1,6);
     cprintf("Player: %d",pv);
-    for (i = 0; i < size; i++) {
+    for (i = 0; i < handsize; i++) {
         if (playercards[i] != NULL) {
             for (j = (i*5)+2; j < (i*5)+6; j++) {
                 for (k = 7; k < 11; k++) {
@@ -241,8 +241,8 @@ int computevalue (char *ctc[]) {
     int i = 0; 
     int cv = 0;
     char cardnum; 
-    int size = 5; /* Size of player and dealer hand arrays - have to explicitly set this */
-    for (i = 0; i < size; i++) {
+
+    for (i = 0; i < handsize; i++) {
         if (ctc[i] != NULL) {
             cardnum = ctc[i][0];
             switch (cardnum) {
