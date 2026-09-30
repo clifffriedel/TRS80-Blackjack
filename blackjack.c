@@ -55,18 +55,16 @@ void drawborder() {
     }
 }
 
-void displaycards(int dud) { /*dud = Dealer second card up or down.  Down = 0, only show 2 cards, Up = 1, show up to 5. */
+void displaycards(int dud) { /*dud = Dealer second card up or down.  Down = 0, only show 2 cards, Up = 1, show up to cardsize. */
     int i = 0;
     int j = 0;
     int k = 0;
     
-    for (i = 1; i < 10; i++) { /* Clears card area */
-        gotoxy(i,1);
-        cprintf("                                       ");
-    }
     if (dud == 0) {
         gotoxy(1,1);
         cprintf("Dealer: ");
+        gotoxy(40,1);
+        cprintf("Dealer stays on 17.");
         for (j = 2; j < 6; j++) {
             for (k = 2; k < 6; k++) {
                 gotoxy(j,k);
@@ -98,6 +96,8 @@ void displaycards(int dud) { /*dud = Dealer second card up or down.  Down = 0, o
     } else {
         gotoxy(1,1);
         cprintf("Dealer: %d",dv);
+        gotoxy(40,1);
+        cprintf("Dealer stays on 17.");
         for (i = 0; i < handsize; i++) {
             if (dealercards[i] != NULL) {
                 for (j = (i*5)+2; j < (i*5)+6; j++) {
@@ -127,6 +127,8 @@ void displaycards(int dud) { /*dud = Dealer second card up or down.  Down = 0, o
     }
     gotoxy(1,6);
     cprintf("Player: %d",pv);
+    gotoxy(40,6);
+    cprintf("Blackjack pays 3:2");
     for (i = 0; i < handsize; i++) {
         if (playercards[i] != NULL) {
             for (j = (i*5)+2; j < (i*5)+6; j++) {
@@ -213,7 +215,7 @@ void getbet(void) {
         scanf("%d",&bet);
         clearinput();
         if ((bet <= 0) || (bet > bankroll)) {
-            gotoxy(40,13);
+            gotoxy(35,13);
             cprintf("Invalid bet.");
             for (i=0 ; i<10000 ; i++); /* delay loop */
             bet = 0;
@@ -241,6 +243,7 @@ int computevalue (char *ctc[]) {
     int i = 0; 
     int cv = 0;
     char cardnum; 
+    int aflag = 0;
 
     for (i = 0; i < handsize; i++) {
         if (ctc[i] != NULL) {
@@ -277,15 +280,16 @@ int computevalue (char *ctc[]) {
                     cv += 9;
                     break;
                 case 'A':
-                    if (cv < 21) {
-                        cv += 11;
-                        if (cv > 21) {
-                            cv -= 10;
-                        }
-                    }
+                    cv += 11;
+                    aflag++;              
             }
         }
     }
+    while ((aflag > 0) && (cv > 21)) { /* This checks if there are aces in the hand and if the player or dealer busts.  If so, it removes 10 for each ace.  It checks again to see if the value is under 21 and if any aflags are remaining. */
+        cv -= 10;
+        aflag--;
+    }
+
     return cv;
 }
 
@@ -379,7 +383,7 @@ int main(void) {
         bet = 0;
         cardsdealt = 0;
 
-        for (i = 0; i < 5; i++) {
+        for (i = 0; i < handsize; i++) {
             playercards[i] = NULL;
             dealercards[i] = NULL;
         }
@@ -409,7 +413,7 @@ int main(void) {
             }
             else
             {
-                gotoxy(40,13);
+                gotoxy(35,13);
                 cprintf("Dealer wins."); 
             }
         }
