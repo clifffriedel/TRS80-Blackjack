@@ -329,7 +329,7 @@ int playerturn (void) {
     }
 
     while (1) {
-        if (dd == 1) {
+        if ((dd == 1) && (bankroll >= bet)) {
             gotoxy(1,11);
             cprintf("(H)it, (S)tand or (D)ouble Down: ");
             dd = 0;
@@ -340,11 +340,12 @@ int playerturn (void) {
         scanf("%c",&choice);
         clearinput();
         choice = toupper(choice);
-        if (choice == 'D') {
+        if ((choice == 'D') && (dd == 0)) {
             bankroll -= bet;
             bet = bet*2;
             playerhit();
             pv = computevalue(playercards);
+            displaycards(0);
             gotoxy(2,13);
             cprintf("Bankroll: $%6d", bankroll);
             gotoxy(22,13);
