@@ -22,6 +22,12 @@ int dc = 0;
 int pv = 0;
 int dv = 0;
 
+void disablecursor (void) {
+    #asm
+        ld a,15
+        call $33 ; This disables the cursor in LDOS 
+    #endasm
+}
 
 void drawborder() {
     int i;
@@ -165,6 +171,7 @@ void titlescreen(void) {
     int x;
     /* wait for any key, use the x-position or a tick counter */
     x = 0;
+    disablecursor();
     clrscr();
     drawborder();
     gotoxy(26,4);
@@ -308,11 +315,12 @@ void dealerhit (void) {
 int playerturn (void) {
     char choice = NULL;
     int i;
+    int dd = 1;
 
     if (pv == 21) { /* Player hit Blackjack. Pay back his bet plus his bet * 1.5 (3:2 blackjack). Return 1 to show we won. */
         gotoxy(35,13);
         cprintf("Blackjack! You win $%d",(int)(bet*1.5));
-        bankroll += bet+(bet*1.5);
+        bankroll += bet+(int)(bet*1.5);
         return 1;
     }
 
@@ -321,12 +329,28 @@ int playerturn (void) {
     }
 
     while (1) {
-        gotoxy(1,11);
-        cprintf("(H)it or (S)tand: ");
+        if (dd == 1) {
+            gotoxy(1,11);
+            cprintf("(H)it, (S)tand or (D)ouble Down: ");
+            dd = 0;
+        } else {
+            gotoxy(1,11);
+            cprintf("(H)it or (S)tand: ");
+        }
         scanf("%c",&choice);
         clearinput();
         choice = toupper(choice);
-        if (choice == 'H') {
+        if (choice == 'D') {
+            bankroll -= bet;
+            bet = bet*2;
+            playerhit();
+            pv = computevalue(playercards);
+            gotoxy(2,13);
+            cprintf("Bankroll: $%6d", bankroll);
+            gotoxy(22,13);
+            cprintf("Bet: $%6d", bet);
+            return 0;
+        } else if (choice == 'H') {
             playerhit();
             pv = computevalue(playercards);
             displaycards(0);
@@ -417,8 +441,12 @@ int main(void) {
                 cprintf("Dealer wins."); 
             }
         }
+        gotoxy(2,13);
+        cprintf("                 ");
+        gotoxy(2,13);
+        cprintf("Bankroll: $%6d", bankroll);
         gotoxy(1,11);
-        cprintf("                              ");
+        cprintf("                                  ");
         gotoxy(1,11);
         cprintf("Play again (Y/N)? ");
         scanf("%c",&exit);
