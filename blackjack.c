@@ -329,6 +329,8 @@ int playerturn (void) {
     }
 
     while (1) {
+        gotoxy(1,11);
+        cprintf("                                  ");
         if ((dd == 1) && (bankroll >= bet)) {
             gotoxy(1,11);
             cprintf("(H)it, (S)tand or (D)ouble Down: ");
